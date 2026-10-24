@@ -19,6 +19,14 @@ docker compose --profile traffico up -d      # dipendenti finti, ~2 richieste al
 - Postgres: `localhost:5434`, utente `presenze`/`presenze`; in sola lettura `solvo_ro`/`solvo_ro`
 - Log: in Loki con `{service="presenze", env="prod"}`
 
+## API
+
+| Metodo | Percorso | Cosa fa |
+| --- | --- | --- |
+| `POST` | `/api/dipendenti/{id}/timbra` | entrata, alla seconda timbratura del giorno uscita |
+| `GET` | `/api/dipendenti/{id}/riepilogo?mese=AAAA-MM` | ore ordinarie, straordinari e festivi del mese |
+| `GET` | `/api/reparti/{id}/presenti-oggi` | chi ha timbrato oggi nel reparto |
+
 ## Sviluppo
 
 ```bash
