@@ -1,0 +1,43 @@
+# Rilascio sul Mac con un runner self-hosted (etichetta `presenze`, vedi README).
+# Solvo lo riconosce come rilascio (`deploy_workflow` del prodotto) e per il rollback lo
+# avvia con `workflow_dispatch` e la versione precedente nell'input `version`.
+name: deploy
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+    inputs:
+      version:
+        description: "Commit da rilasciare (vuoto: la testa di main)"
+        required: false
+
+# Niente `concurrency`: un run in attesa verrebbe annullato da quello dopo (anche un
+# rollback). Il runner del Mac esegue comunque un job alla volta.
+
+jobs:
+  deploy:
+    runs-on: [self-hosted, presenze]
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+      # La versione può essere uno sha corto (Solvo usa 12 caratteri): checkout non lo
+      # accetta come `ref`, git sì.
+      - name: Versione da rilasciare
+        if: inputs.version
+        env:
+          VERSION: ${{ inputs.version }}
+        run: git checkout --detach "$VERSION"
+      - name: Rilascio
+        run: |
+          VERSION=$(git rev-parse --short=12 HEAD)
+          echo "Rilascio di $VERSION"
+          PRESENZE_VERSION=$VERSION docker compose up -d --build app
+      - name: Controllo
+        run: |
+          for i in $(seq 1 30); do
+            curl -fsS http://localhost:8090/health && exit 0
+            sleep 2
+          done
+          echo "Presenze non risponde dopo il rilascio" && exit 1
