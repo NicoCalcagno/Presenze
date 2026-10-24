@@ -3,7 +3,7 @@
 Gestionale interno di timbrature e ore lavorate: i dipendenti timbrano entrata e uscita e
 vedono il riepilogo del mese (ore ordinarie, straordinari, ore nei festivi), i responsabili
 vedono chi è presente. FastAPI e Postgres, log in Loki, CI e deploy con GitHub Actions.
-Lo segue [Solvo](https://github.com/NicoCalcagno/Solvo).
+Lo segue Solvo (ticket, incident, rilasci).
 
 ## Avvio sul Mac
 

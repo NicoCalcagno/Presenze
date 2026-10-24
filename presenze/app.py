@@ -24,6 +24,7 @@ async def lifespan(_: FastAPI) -> AsyncIterator[None]:
     logs.log(logger, logging.INFO, "presenze avviata", event="startup")
     yield
     db.pool.close()
+    logs.shutdown()
 
 
 app = FastAPI(title="Presenze", version=VERSION, lifespan=lifespan)

@@ -16,6 +16,7 @@ from presenze import VERSION
 
 SERVICE = os.environ.get("PRESENZE_SERVICE", "presenze")
 ENV = os.environ.get("PRESENZE_ENV", "dev")
+_providers: list = []
 
 
 class JsonFormatter(logging.Formatter):
@@ -45,6 +46,7 @@ def _otlp_handler(endpoint: str) -> logging.Handler:
             {"service.name": SERVICE, "service": SERVICE, "env": ENV, "service.version": VERSION}
         )
     )
+    _providers.append(provider)
     provider.add_log_record_processor(
         BatchLogRecordProcessor(OTLPLogExporter(endpoint=f"{endpoint.rstrip('/')}/v1/logs"))
     )
@@ -86,6 +88,12 @@ def setup() -> None:
     root.setLevel(logging.INFO)
     # Le righe di accesso di uvicorn le scrive già il middleware, con più campi.
     logging.getLogger("uvicorn.access").disabled = True
+
+
+def shutdown() -> None:
+    """Invia le righe ancora in coda (a ogni rilascio il container viene sostituito)."""
+    for provider in _providers:
+        provider.shutdown()
 
 
 def log(logger: logging.Logger, level: int, message: str, **fields: object) -> None:

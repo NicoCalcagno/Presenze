@@ -8,7 +8,7 @@ from pathlib import Path
 from psycopg.rows import dict_row
 from psycopg_pool import ConnectionPool
 
-DSN = os.environ.get("DATABASE_URL", "postgresql://presenze:presenze@localhost:5433/presenze")
+DSN = os.environ.get("DATABASE_URL", "postgresql://presenze:presenze@localhost:5434/presenze")
 SQL = Path(__file__).resolve().parent.parent / "db"
 
 pool = ConnectionPool(
