@@ -7,7 +7,12 @@ BEGIN
     END IF;
 END
 $$;
-GRANT CONNECT ON DATABASE presenze TO solvo_ro;
+-- Il nome del database cambia (in locale `presenze`, su Railway `railway`).
+DO $$
+BEGIN
+    EXECUTE format('GRANT CONNECT ON DATABASE %I TO solvo_ro', current_database());
+END
+$$;
 GRANT USAGE ON SCHEMA public TO solvo_ro;
 GRANT SELECT ON ALL TABLES IN SCHEMA public TO solvo_ro;
 ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT SELECT ON TABLES TO solvo_ro;

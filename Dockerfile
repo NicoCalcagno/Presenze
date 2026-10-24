@@ -14,4 +14,5 @@ RUN uv sync --frozen --no-dev
 ARG PRESENZE_VERSION=dev
 ENV PRESENZE_VERSION=${PRESENZE_VERSION}
 EXPOSE 8080
-CMD ["uvicorn", "presenze.app:app", "--host", "0.0.0.0", "--port", "8080"]
+# `::` ascolta su IPv4 e IPv6 (la rete privata di Railway usa IPv6).
+CMD ["uvicorn", "presenze.app:app", "--host", "::", "--port", "8080"]
