@@ -32,6 +32,8 @@ def test_riepilogo_del_mese(client: TestClient) -> None:
     assert r.status_code == 200, r.text
     assert r.json()["minuti_ordinari"] >= 0
     assert r.json()["minuti_previsti"] > 0
+    # settembre ha 30 giorni: il riepilogo non deve fallire
+    assert client.get("/api/dipendenti/1/riepilogo?mese=2025-09").status_code == 200
     assert client.get("/api/dipendenti/1/riepilogo?mese=ottobre").status_code == 422
 
 
