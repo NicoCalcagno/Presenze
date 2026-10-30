@@ -31,6 +31,7 @@ def test_riepilogo_del_mese(client: TestClient) -> None:
     r = client.get("/api/dipendenti/1/riepilogo")
     assert r.status_code == 200, r.text
     assert r.json()["minuti_ordinari"] >= 0
+    assert r.json()["minuti_previsti"] > 0
     assert client.get("/api/dipendenti/1/riepilogo?mese=ottobre").status_code == 422
 
 

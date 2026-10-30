@@ -89,7 +89,8 @@ def timbra(dipendente_id: int) -> dict:
 def riepilogo(dipendente_id: int, mese: str | None = None) -> dict:
     with db.pool.connection() as conn:
         mese = mese or date.today().strftime("%Y-%m")
-        return servizio.riepilogo(conn, dipendente_id, mese).__dict__
+        riepilogo = servizio.riepilogo(conn, dipendente_id, mese).__dict__
+        return {**riepilogo, "minuti_previsti": servizio.minuti_previsti(conn, dipendente_id, mese)}
 
 
 @app.get("/api/reparti/{reparto_id}/presenti-oggi")

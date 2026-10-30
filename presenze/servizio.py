@@ -72,6 +72,19 @@ def riepilogo(conn: Connection, dipendente_id: int, mese: str) -> calcolo.Riepil
     return calcolo.riepilogo(mese, contratto, giornate)
 
 
+def minuti_previsti(conn: Connection, dipendente_id: int, mese: str) -> int:
+    """Minuti da contratto nel mese: i giorni dal lunedì al venerdì per l'orario giornaliero."""
+    inizio = date.fromisoformat(f"{mese}-01")
+    ultimo = inizio.replace(day=28 if inizio.month == 2 else 31)
+    feriali = sum(
+        1
+        for giorno in range(1, ultimo.day + 1)
+        if inizio.replace(day=giorno).weekday() < calcolo.GIORNI_LAVORATIVI
+    )
+    contratto = calcolo.Contratto(dipendente(conn, dipendente_id)["ore_settimanali"])
+    return feriali * contratto.minuti_giornalieri
+
+
 def presenti_oggi(conn: Connection, reparto_id: int, oggi: date) -> list[dict[str, Any]]:
     return conn.execute(
         """SELECT d.id, d.matricola, t.entrata, t.uscita
