@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import calendar
 from datetime import date, datetime
 from typing import Any
 
@@ -75,7 +76,7 @@ def riepilogo(conn: Connection, dipendente_id: int, mese: str) -> calcolo.Riepil
 def minuti_previsti(conn: Connection, dipendente_id: int, mese: str) -> int:
     """Minuti da contratto nel mese: i giorni dal lunedì al venerdì per l'orario giornaliero."""
     inizio = date.fromisoformat(f"{mese}-01")
-    ultimo = inizio.replace(day=28 if inizio.month == 2 else 31)
+    ultimo = inizio.replace(day=calendar.monthrange(inizio.year, inizio.month)[1])
     feriali = sum(
         1
         for giorno in range(1, ultimo.day + 1)
