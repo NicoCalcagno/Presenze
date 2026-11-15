@@ -45,3 +45,10 @@ def test_timbra_entrata_e_uscita(client: TestClient) -> None:
     assert first.json()["tipo"] == "entrata"
     assert client.post("/api/dipendenti/2/timbra").json()["tipo"] == "uscita"
     assert client.post("/api/dipendenti/2/timbra").status_code == 422
+
+
+def test_presenti_oggi_con_i_minuti(client: TestClient) -> None:
+    # il dipendente 2 (reparto 3) ha entrata e uscita di oggi dal test qui sopra
+    r = client.get("/api/reparti/3/presenti-oggi")
+    assert r.status_code == 200, r.text
+    assert all(p["minuti_oggi"] >= 0 for p in r.json())
