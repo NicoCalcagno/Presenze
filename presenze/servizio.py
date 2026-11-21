@@ -87,11 +87,9 @@ def minuti_previsti(conn: Connection, dipendente_id: int, mese: str) -> int:
 
 
 def presenti_oggi(conn: Connection, reparto_id: int, oggi: date) -> list[dict[str, Any]]:
-    """Chi ha timbrato oggi nel reparto, con i minuti lavorati (pausa pranzo esclusa)."""
-    righe = conn.execute(
+    return conn.execute(
         """SELECT d.id, d.matricola, t.entrata, t.uscita
            FROM dipendenti d JOIN timbrature t ON t.dipendente_id = d.id AND t.giorno = %s
            WHERE d.reparto_id = %s ORDER BY t.entrata""",
         (oggi, reparto_id),
     ).fetchall()
-    return [{**r, "minuti_oggi": calcolo.minuti_lavorati(r["entrata"], r["uscita"])} for r in righe]
