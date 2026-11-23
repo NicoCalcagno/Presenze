@@ -9,6 +9,8 @@ from datetime import date, datetime, time
 GIORNI_LAVORATIVI = 5  # dal lunedì al venerdì
 PAUSA_OLTRE = 6 * 60  # oltre 6 ore di lavoro si toglie la pausa
 PAUSA = 30
+# Maggiorazione degli straordinari nei festivi da CCNL, per orario settimanale (percento).
+MAGGIORAZIONE_FESTIVI = {40: 50, 38: 50}
 
 
 @dataclass(frozen=True)
@@ -34,6 +36,7 @@ class Riepilogo:
     minuti_ordinari: int
     minuti_straordinari: int
     minuti_festivi: int
+    minuti_festivi_maggiorati: int
 
 
 def minuti_lavorati(entrata: time, uscita: time) -> int:
@@ -53,10 +56,12 @@ def riepilogo(mese: str, contratto: Contratto, giornate: list[Giornata]) -> Riep
             continue
         ordinari += min(giornata.minuti, contratto.minuti_giornalieri)
         straordinari += max(giornata.minuti - contratto.minuti_giornalieri, 0)
+    maggiorazione = MAGGIORAZIONE_FESTIVI[contratto.ore_settimanali]
     return Riepilogo(
         mese=mese,
         giorni_lavorati=sum(1 for g in giornate if g.minuti > 0),
         minuti_ordinari=ordinari,
         minuti_straordinari=straordinari,
         minuti_festivi=festivi,
+        minuti_festivi_maggiorati=festivi * (100 + maggiorazione) // 100,
     )
