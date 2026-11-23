@@ -57,7 +57,9 @@ def riepilogo(mese: str, contratto: Contratto, giornate: list[Giornata]) -> Riep
             continue
         ordinari += min(giornata.minuti, contratto.minuti_giornalieri)
         straordinari += max(giornata.minuti - contratto.minuti_giornalieri, 0)
-    maggiorazione = MAGGIORAZIONE_FESTIVI.get(contratto.ore_settimanali, MAGGIORAZIONE_FESTIVI_DEFAULT)
+    maggiorazione = MAGGIORAZIONE_FESTIVI.get(
+        contratto.ore_settimanali, MAGGIORAZIONE_FESTIVI_DEFAULT
+    )
     return Riepilogo(
         mese=mese,
         giorni_lavorati=sum(1 for g in giornate if g.minuti > 0),
