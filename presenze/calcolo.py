@@ -11,6 +11,7 @@ PAUSA_OLTRE = 6 * 60  # oltre 6 ore di lavoro si toglie la pausa
 PAUSA = 30
 # Maggiorazione degli straordinari nei festivi da CCNL, per orario settimanale (percento).
 MAGGIORAZIONE_FESTIVI = {40: 50, 38: 50}
+MAGGIORAZIONE_FESTIVI_DEFAULT = 50
 
 
 @dataclass(frozen=True)
@@ -56,7 +57,9 @@ def riepilogo(mese: str, contratto: Contratto, giornate: list[Giornata]) -> Riep
             continue
         ordinari += min(giornata.minuti, contratto.minuti_giornalieri)
         straordinari += max(giornata.minuti - contratto.minuti_giornalieri, 0)
-    maggiorazione = MAGGIORAZIONE_FESTIVI[contratto.ore_settimanali]
+    maggiorazione = MAGGIORAZIONE_FESTIVI.get(
+        contratto.ore_settimanali, MAGGIORAZIONE_FESTIVI_DEFAULT
+    )
     return Riepilogo(
         mese=mese,
         giorni_lavorati=sum(1 for g in giornate if g.minuti > 0),
